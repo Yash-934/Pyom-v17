@@ -121,22 +121,18 @@ class MainActivity : FlutterActivity() {
                             append("export LD_PRELOAD=; ")
                             // Execute proot with improved flags
                             append("exec '${prootBin.absolutePath}' ")
-                            append("--kill-on-exit ")          // kill all child procs on exit
-                            append("--link2symlink ")           // handle symlinks on any FS
-                            append("-0 ")                       // fake root (uid=0)
+                            append("--kill-on-exit ")
+                            append("--link2symlink ")
+                            append("-0 ")
                             append("-r '${envDir.absolutePath}' ")
                             append("-b /dev ")
-                            append("-b /dev/urandom:/dev/random ")  // fix /dev/random
+                            append("-b /dev/urandom:/dev/random ")
                             append("-b /proc ")
                             append("-b /sys ")
                             append("-b '${tmpDir.absolutePath}:/dev/shm' ")
                             append("-w /root ")
-                            // Launch shell via env -i to set clean environment
-                            append("/usr/bin/env -i ")
-                            append("HOME=/root USER=root LOGNAME=root ")
-                            append("TERM=xterm-256color ")
-                            append("LANG=C.UTF-8 LC_ALL=C.UTF-8 ")
-                            append("PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin ")
+                            // FIX: Launch shell DIRECTLY — no /usr/bin/env inside chroot
+                            // env vars are set BEFORE exec via the shell -c prefix
                             append("$shell --login")
                         }
                         result.success(mapOf(
